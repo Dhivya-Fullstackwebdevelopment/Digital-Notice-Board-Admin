@@ -55,7 +55,7 @@ export default function NoticeManagement() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Portal Management</h1>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Notice <span className="text-blue-600">Management</span></h1>
             <div className="flex items-center gap-2 mt-2">
               <div className="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-black rounded uppercase">Admin</div>
               <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Campus Communications Control</p>
