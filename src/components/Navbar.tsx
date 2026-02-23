@@ -18,7 +18,7 @@ export default function Navbar() {
           <div className="bg-blue-600 p-2 rounded-xl text-white group-hover:bg-blue-700 transition-colors">
             <HiViewGrid size={24} />
           </div>
-          <span className="text-2xl font-black text-slate-800 tracking-tighter">CampusConnect</span>
+          <span className="text-2xl font-black text-slate-800 tracking-tighter">CAMPUS<span className="text-blue-600">CONNECT</span></span>
         </Link>
 
         {isAdmin && (
