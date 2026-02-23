@@ -68,7 +68,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                 className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none shadow-sm" />
                         </div>
 
-                        <button type="submit" className="w-full text-white bg-blue-600 py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all mt-2 uppercase tracking-widest">
+                        <button type="submit" className="w-full text-white bg-blue-600 py-2 rounded-2xl font-black text-md shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all mt-2 uppercase tracking-widest">
                             {initialData ? "Apply Changes" : "Post to Portal"}
                         </button>
                     </form>

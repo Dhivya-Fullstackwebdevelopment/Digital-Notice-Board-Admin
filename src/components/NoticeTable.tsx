@@ -78,17 +78,17 @@ export default function NoticeManagement() {
                 placeholder="Filter by title..."
                 value={searchTitle}
                 onChange={(e) => setSearchTitle(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 placeholder-gray-400 bg-white border border-slate-100 rounded-xl text-sm focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full pl-11 pr-4 py-3  text-black border border-gray-300 placeholder-gray-300 bg-white rounded-xl text-sm focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
               />
             </div>
           </div>
 
           <div className="w-full md:w-64 space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Department Filter</label>
+            <label className="text-[10px] font-black text-slate-300 uppercase ml-1">Department Filter</label>
             <select
               value={filterDept}
               onChange={(e) => setFilterDept(e.target.value)}
-              className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
+              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
             >
               <option value="0">All Departments</option>
               {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
@@ -100,7 +100,7 @@ export default function NoticeManagement() {
             <select
               value={filterCat}
               onChange={(e) => setFilterCat(e.target.value)}
-              className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
+              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
             >
               {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
             </select>
@@ -108,7 +108,7 @@ export default function NoticeManagement() {
 
           <button
             onClick={() => { setSearchTitle(""); setFilterDept("0"); setFilterCat("0"); }}
-            className="px-6 py-3 text-slate-400 hover:text-blue-600 font-black text-[10px] uppercase tracking-widest transition-colors"
+            className="px-6 py-3 text-white bg-blue-500 hover:bg-white border-2 hover:border-blue-500 hover:text-blue-500  rounded-3xl font-black text-[10px] uppercase tracking-widest transition-colors"
           >
             Reset Filters
           </button>
@@ -118,7 +118,7 @@ export default function NoticeManagement() {
         <div className="bg-white/90 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl overflow-hidden">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 text-slate-400 text-[10px] uppercase tracking-widest font-black border-b border-slate-100">
+              <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
                 <th className="p-6">ID</th>
                 <th className="p-6">Announcement Title</th>
                 <th className="p-6">Department</th>
@@ -127,23 +127,23 @@ export default function NoticeManagement() {
                 <th className="p-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y  divide-slate-50">
               {filteredNotices.map((n) => (
-                <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group">
-                  <td className="p-6 font-black text-slate-400 text-[11px]">{n.id}</td>
-                  <td className="p-6">
+                <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
+                  <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
+                  <td className="py-3 px-6">
                     <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
                   </td>
-                  <td className="p-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
-                  <td className="p-6">
+                  <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
+                  <td className="py-3 px-6">
                     <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
                       {getCatLabel(n.categoryId)}
                     </span>
                   </td>
-                  <td className="p-6">
+                  <td className="py-3 px-6">
                     <p className=" text-slate-500 text-sm leading-none mb-1 italic">{n.title}</p>
                   </td>
-                  <td className="p-6 text-right">
+                  <td className="py-3 px-6 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
                         <HiOutlinePencil size={20} />
