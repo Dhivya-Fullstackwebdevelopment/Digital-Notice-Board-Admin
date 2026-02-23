@@ -1,4 +1,4 @@
-import { HiOutlineTrash, HiOutlineExclamation } from "react-icons/hi";
+import { HiOutlineExclamation } from "react-icons/hi";
 
 export default function DeleteModal({ isOpen, onClose, onConfirm }: any) {
   if (!isOpen) return null;

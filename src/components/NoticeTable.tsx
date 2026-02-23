@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiOutlineFilter } from "react-icons/hi";
+import { HiOutlinePencil, HiOutlineTrash, HiPlus} from "react-icons/hi";
 import NoticeModal from "../components/Noticespopups/NoticeModal";
 import DeleteModal from "../components/Noticespopups/DeleteModal";
 import { CATEGORIES, DEPARTMENTS, type Notice } from "../components/types/notices";
@@ -51,6 +51,7 @@ export default function NoticeManagement() {
               <th className="p-6">Title</th>
               <th className="p-6">Department</th>
               <th className="p-6">Category</th>
+              <th className="p-6">Description</th>
               <th className="p-6 text-right">Actions</th>
             </tr>
           </thead>
@@ -65,6 +66,7 @@ export default function NoticeManagement() {
                     {getCatLabel(n.categoryId)}
                   </span>
                 </td>
+                <td className="p-4  text-slate-500 text-[11px] italic">{n.content}</td>
                 <td className="p-4 text-right">
                   <div className="flex justify-end gap-1">
                     <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-lg">
