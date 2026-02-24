@@ -1,6 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HiOutlineLogout, HiOutlineBell } from "react-icons/hi";
-import { FaGraduationCap } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { GiGraduateCap } from "react-icons/gi";
 

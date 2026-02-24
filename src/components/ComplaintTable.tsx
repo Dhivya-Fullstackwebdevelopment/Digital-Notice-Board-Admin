@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiSearch, HiOutlineFilter } from "react-icons/hi";
+import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiSearch } from "react-icons/hi";
 import ComplaintModal from "../components/Complaintpopups/ComplaintModal";
 import DeleteModal from "../components/Noticespopups/DeleteModal"; // Reusing your existing delete modal
 import { BackgroundEffect } from "./BackgroundEffect";
