@@ -52,12 +52,12 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Student Name</label>
                 <input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} 
-                  className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all font-bold shadow-sm" />
+                  className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all  shadow-sm" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Current Status</label>
                 <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} 
-                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-sm text-slate-700 appearance-none cursor-pointer">
+                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
                   <option value="Pending">Pending</option>
                   <option value="In Progress">In Progress</option>
                   <option value="Resolved">Resolved</option>
@@ -69,14 +69,14 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Complaint Subject</label>
               <input required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} 
-                className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all font-bold shadow-sm" />
+                className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all shadow-sm" />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Issue Description</label>
               <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none shadow-sm" />
+                className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
             </div>
 
             {/* Admin Resolution Field */}
@@ -87,7 +87,7 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
                 rows={2} 
                 value={formData.resolution} 
                 onChange={e => setFormData({ ...formData, resolution: e.target.value })} 
-                className="w-full text-slate-900 px-5 py-3 rounded-xl bg-white border border-blue-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none shadow-sm" />
+                className="w-full text-slate-900 px-5 py-3 rounded-xl bg-white border border-blue-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
             </div>
 
             <button type="submit" className="w-full text-white bg-blue-600 py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all mt-2 uppercase tracking-widest">

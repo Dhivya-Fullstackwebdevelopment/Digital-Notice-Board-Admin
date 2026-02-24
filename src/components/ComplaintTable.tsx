@@ -23,8 +23,8 @@ export default function ComplaintManagement() {
   // Filter Logic
   const filteredComplaints = useMemo(() => {
     return complaints.filter((c) => {
-      const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            c.compID.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.compID.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterStatus === "All" || c.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
@@ -86,6 +86,12 @@ export default function ComplaintManagement() {
               <option value="Resolved">Resolved</option>
             </select>
           </div>
+                    <button
+            onClick={() => { setSearchQuery(""); setFilterStatus("All"); }}
+            className="px-6 py-3 text-white bg-blue-500 hover:bg-white border-2 hover:border-blue-500 hover:text-blue-500  rounded-3xl font-black text-[10px] uppercase tracking-widest transition-colors"
+          >
+            Reset Filters
+          </button>
         </div>
 
         {/* Table */}
@@ -97,6 +103,7 @@ export default function ComplaintManagement() {
                 <th className="p-6">Category</th>
                 <th className="p-6">Subject</th>
                 <th className="p-6">Status</th>
+                <th className="p-6">Description</th>
                 <th className="p-6 text-right">Actions</th>
               </tr>
             </thead>
@@ -110,13 +117,13 @@ export default function ComplaintManagement() {
                   <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.category}</td>
                   <td className="py-3 px-6text-sm text-slate-600 italic">{c.subject}</td>
                   <td className="py-3 px-6">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
-                      c.status === "Pending" ? "bg-amber-100 text-amber-600" : 
-                      c.status === "In Progress" ? "bg-blue-100 text-blue-600" : "bg-emerald-100 text-emerald-600"
-                    }`}>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "Pending" ? "bg-amber-100 text-amber-600" :
+                        c.status === "In Progress" ? "bg-blue-100 text-blue-600" : "bg-emerald-100 text-emerald-600"
+                      }`}>
                       {c.status}
                     </span>
                   </td>
+                  <td className="py-3 px-6 text-sm text-slate-600 italic">{c.description}</td>
                   <td className="py-3 px-6text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => { setSelectedComplaint(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
@@ -132,7 +139,7 @@ export default function ComplaintManagement() {
             </tbody>
           </table>
           {filteredComplaints.length === 0 && (
-             <div className="p-20 text-center text-slate-400 font-bold">No records found.</div>
+            <div className="p-20 text-center text-slate-400 font-bold">No records found.</div>
           )}
         </div>
       </div>
