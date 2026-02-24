@@ -11,7 +11,7 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
     subject: "", 
     status: "Pending", 
     description: "",
-    resolution: "" // New field for Admin
+    resolution: "" 
   });
 
   useEffect(() => {
@@ -23,10 +23,11 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md">
+      
       <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white relative">
         <BackgroundEffect />
         
-        {/* Header - Matches Notice Style */}
+        {/* Header Section */}
         <div className="relative z-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 flex justify-between items-center border-b border-blue-100">
           <div>
             <h2 className="text-xl font-black text-slate-900 tracking-tight">
@@ -42,10 +43,11 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
           </button>
         </div>
 
-        <div className="p-8 relative z-10 max-h-[80vh] overflow-y-auto custom-scrollbar">
+        {/* Scrollable Content Body - Uses global .custom-scrollbar from index.css */}
+        <div className="p-8 relative z-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onSave(formData); }}>
             
-            {/* Row 1: Student Name & Status */}
+            {/* Student Name & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Student Name</label>
@@ -63,21 +65,21 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
               </div>
             </div>
 
-            {/* Row 2: Subject */}
+            {/* Subject */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Complaint Subject</label>
               <input required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} 
                 className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all font-bold shadow-sm" />
             </div>
 
-            {/* Row 3: Description */}
+            {/* Description */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Issue Description</label>
               <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
                 className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none shadow-sm" />
             </div>
 
-            {/* NEW: Admin Resolution Field (Highlighted) */}
+            {/* Admin Resolution Field */}
             <div className="space-y-2 p-4 bg-blue-50/50 rounded-3xl border border-blue-100">
               <label className="text-[10px] font-black uppercase tracking-widest text-blue-500 ml-1">Resolution / Action Taken (Admin Only)</label>
               <textarea 

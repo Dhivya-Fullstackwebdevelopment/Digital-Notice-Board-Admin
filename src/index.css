@@ -27,3 +27,31 @@ button {
   font-family: inherit;
   cursor: pointer;
 }
+
+/* Custom Scrollbar  */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0; 
+  border-radius: 100px;
+  border: 2px solid transparent; 
+  background-clip: content-box; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #93c5fd; 
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
