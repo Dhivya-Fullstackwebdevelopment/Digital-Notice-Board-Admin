@@ -41,11 +41,11 @@ export default function DeleteModal({ isOpen, onClose, onConfirm }: any) {
           <HiOutlineX size={24} />
         </button>
         <div className="relative z-10">
-          <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <div className="w-17 h-17 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
             <HiOutlineExclamation size={40} className="animate-bounce" />
           </div>
 
-          <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Confirm Deletion</h3>
+          <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Confirm Deletion</h3>
           <p className="text-slate-500 font-medium mb-10 leading-relaxed px-6 text-base">
             Are you sure you want to remove this notice?
           </p>
