@@ -4,6 +4,8 @@ export interface Notice {
     categoryId: string;
     deptId: string;
     content: string;
+    imageUrl?: string;
+    pdfUrl?: string;
 }
 
 export const CATEGORIES = [
