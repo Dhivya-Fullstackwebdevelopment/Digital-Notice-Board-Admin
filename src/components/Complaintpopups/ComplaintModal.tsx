@@ -1,32 +1,46 @@
 import { useState, useEffect } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import { BackgroundEffect } from "../BackgroundEffect";
+import { ISSUESCATEGORIES, DEPARTMENTS } from "../types/notices";
 
 export default function ComplaintModal({ isOpen, onClose, onSave, initialData }: any) {
   const [formData, setFormData] = useState({
-    name: "", 
-    compID: "", 
-    category: "Anti-Ragging", 
-    dept: "Computer Science", 
-    subject: "", 
-    status: "Pending", 
+    name: "",
+    compID: "",
+    category: "",
+    dept: "",
+    subject: "",
+    status: "pending",
     description: "",
-    resolution: "" 
+    resolution: ""
   });
 
   useEffect(() => {
-    if (initialData) setFormData({ ...initialData, resolution: initialData.resolution || "" });
-    else setFormData({ name: "", compID: "", category: "Anti-Ragging", dept: "Computer Science", subject: "", status: "Pending", description: "", resolution: "" });
+    if (initialData) {
+      setFormData({ ...initialData, resolution: initialData.resolution || "" });
+    } else {
+      // Initialize with empty strings or the first item from your shared constants
+      setFormData({
+        name: "",
+        compID: "",
+        category: ISSUESCATEGORIES[0]?.label || "",
+        dept: DEPARTMENTS[0]?.label || "",
+        subject: "",
+        status: "Pending",
+        description: "",
+        resolution: ""
+      });
+    }
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md">
-      
+
       <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white relative">
         <BackgroundEffect />
-        
+
         {/* Header Section */}
         <div className="relative z-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 flex justify-between items-center border-b border-blue-100">
           <div>
@@ -46,21 +60,53 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
         {/* Scrollable Content Body - Uses global .custom-scrollbar from index.css */}
         <div className="p-8 relative z-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onSave(formData); }}>
-            
+
             {/* Student Name & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Student Name</label>
-                <input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} 
+                <input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all  shadow-sm" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Current Status</label>
-                <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} 
+                <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
+                  <option value="pending">Pending</option>
+                  <option value="inprogress">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Issue Category</label>
+                <select
+                  required
+                  value={formData.category}
+                  onChange={e => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 cursor-pointer"
+                >
+                  {ISSUESCATEGORIES.map((item) => (
+                    <option key={item.id} value={item.label}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department</label>
+                <select
+                  required
+                  value={formData.dept}
+                  onChange={e => setFormData({ ...formData, dept: e.target.value })}
+                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 cursor-pointer"
+                >
+                  {DEPARTMENTS.map((dept) => (
+                    <option key={dept.id} value={dept.label}>
+                      {dept.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -68,25 +114,25 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
             {/* Subject */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Complaint Subject</label>
-              <input required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} 
+              <input required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })}
                 className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all shadow-sm" />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Issue Description</label>
-              <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
+              <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
                 className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
             </div>
 
             {/* Admin Resolution Field */}
             <div className="space-y-2 p-4 bg-blue-50/50 rounded-3xl border border-blue-100">
               <label className="text-[10px] font-black uppercase tracking-widest text-blue-500 ml-1">Resolution / Action Taken (Admin Only)</label>
-              <textarea 
+              <textarea
                 placeholder="Describe how this issue was resolved..."
-                rows={2} 
-                value={formData.resolution} 
-                onChange={e => setFormData({ ...formData, resolution: e.target.value })} 
+                rows={2}
+                value={formData.resolution}
+                onChange={e => setFormData({ ...formData, resolution: e.target.value })}
                 className="w-full text-slate-900 px-5 py-3 rounded-xl bg-white border border-blue-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
             </div>
 

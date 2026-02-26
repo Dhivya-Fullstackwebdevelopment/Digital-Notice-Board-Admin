@@ -34,3 +34,32 @@ export const DEPARTMENTS = [
     { id: "10", label: "B.Com" },
     { id: "99", label: "Other" }
 ];
+
+export const ISSUESCATEGORIES = [
+    { id: "1", label: "Internal Marks Issue" },
+    { id: "2", label: "Attendance Shortage Dispute" },
+    { id: "3", label: "Exam Timetable Conflict" },
+    { id: "4", label: "Result Correction Request" },
+    { id: "5", label: "Faculty Behavior Complaint" },
+    { id: "6", label: "Project Evaluation Issue" },
+    { id: "7", label: "Ragging Complaint" },
+    { id: "8", label: "Verbal Harassment" },
+    { id: "9", label: "Physical Harassment" },
+    { id: "10", label: "Cyber Bullying" },
+    { id: "11", label: "Sexual Harassment" },
+    { id: "12", label: "Gender Discrimination" },
+    { id: "13", label: "Classroom Maintenance" },
+    { id: "14", label: "Washroom Cleanliness" },
+    { id: "15", label: "Drinking Water Problem" },
+    { id: "16", label: "Electrical Issue" },
+    { id: "17", label: "Hostel Room Allocation" },
+    { id: "18", label: "Hostel Food Quality" },
+    { id: "19", label: "Hostel WiFi Problem" },
+    { id: "20", label: "Library Resources" },
+    { id: "22", label: "Bus/Transport Issue" },
+    { id: "24", label: "Certificate Delay" },
+    { id: "25", label: "Scholarship Issue" },
+    { id: "27", label: "Portal/IT Login Issue" },
+    { id: "30", label: "Campus Security Concern" },
+    { id: "99", label: "Other" },
+];
