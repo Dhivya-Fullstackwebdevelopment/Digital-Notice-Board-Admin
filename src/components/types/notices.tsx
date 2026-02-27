@@ -19,7 +19,8 @@ export const CATEGORIES = [
     { id: "7", label: "Sports" },
     { id: "8", label: "Hostel" },
     { id: "9", label: "Library" },
-    { id: "10", label: "Competition" }
+    { id: "10", label: "Competition" },
+    { id: "99", label: "Other" }
 ];
 export const DEPARTMENTS = [
     { id: "1", label: "Computer Science & Engineering" },

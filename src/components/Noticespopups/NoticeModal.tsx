@@ -66,6 +66,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category</label>
                                 <select value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
+                                        <option value="">All</option>
                                     {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                                 </select>
                             </div>
