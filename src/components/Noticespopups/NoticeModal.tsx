@@ -2,26 +2,69 @@ import { useState, useEffect } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import { CATEGORIES, DEPARTMENTS, type Notice } from "../types/notices";
 import { BackgroundEffect } from "../BackgroundEffect";
+import apiClient from "../../api/apiUrl";
 
 export default function NoticeModal({ isOpen, onClose, onSave, initialData }: any) {
-    const [formData, setFormData] = useState<Notice>({
-        id: "",
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState<any>({
         title: "",
         categoryId: "1",
         deptId: "1",
         content: "",
-        imageUrl: "", // New field
-        pdfUrl: ""    // New field
     });
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
 
-    // Update the useEffect reset logic as well
     useEffect(() => {
-        if (initialData) setFormData(initialData);
-        else setFormData({
-            id: "", title: "", categoryId: "1", deptId: "1", content: "",
-            imageUrl: "", pdfUrl: ""
-        });
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            setFormData({ title: "", categoryId: "1", deptId: "1", content: "" });
+            setSelectedImage(null);
+            setSelectedPdf(null);
+        }
     }, [initialData, isOpen]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        // 1. Initialize FormData
+        const data = new FormData();
+
+        // 2. Append Text Fields
+        data.append("title", formData.title);
+        data.append("categoryId", formData.categoryId);
+        data.append("deptId", formData.deptId);
+        data.append("content", formData.content);
+
+        // 3. Append Files (The keys "image" and "pdf" must match your backend expectations)
+        if (selectedImage) {
+            data.append("image", selectedImage);
+        }
+        if (selectedPdf) {
+            data.append("pdf", selectedPdf);
+        }
+
+        try {
+            const response = await apiClient.post("/api/notices/create", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data.Status === 1) {
+                onSave(response.data.data); // Notify parent to refresh
+                onClose();
+            }
+        } catch (error) {
+            console.error("Error creating notice:", error);
+            alert("Failed to create notice. Check console for details.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -46,7 +89,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                 </div>
 
                 <div className="p-8 relative z-10">
-                    <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onSave(formData); }}>
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Announcement Title</label>
                             <input required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -66,7 +109,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category</label>
                                 <select value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                                        <option value="">All</option>
+                                    <option value="">All</option>
                                     {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                                 </select>
                             </div>

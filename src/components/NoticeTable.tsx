@@ -1,33 +1,26 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiOutlineFilter, HiSearch } from "react-icons/hi";
 import NoticeModal from "../components/Noticespopups/NoticeModal";
 import DeleteModal from "../components/Noticespopups/DeleteModal";
 import { CATEGORIES, DEPARTMENTS, type Notice } from "../components/types/notices";
 import { BackgroundEffect } from "./BackgroundEffect";
+import apiClient from "../api/apiUrl";
+import { CircularProgress } from '@mui/material';
 
 export default function NoticeManagement() {
-  // Initial State
-  const [notices, setNotices] = useState<Notice[]>([
-    { id: "NTC001", title: "Semester Results Out", categoryId: "5", deptId: "10", content: "Fall 2025 results published on the student portal." },
-    { id: "NTC002", title: "Annual Sports Meet", categoryId: "7", deptId: "1", content: "Register for upcoming sports meet scheduled for next month." },
-  ]);
-
-  // Search & Filter States
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTitle, setSearchTitle] = useState("");
   const [filterDept, setFilterDept] = useState("0");
   const [filterCat, setFilterCat] = useState("0");
-
-  // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  // Helpers
   const getDeptLabel = (id: string) => DEPARTMENTS.find(d => d.id === id)?.label || "N/A";
   const getCatLabel = (id: string) => CATEGORIES.find(c => c.id === id)?.label || "N/A";
 
-  // Combined Filter & Search Logic
   const filteredNotices = useMemo(() => {
     return notices.filter((n) => {
       const matchesSearch = n.title.toLowerCase().includes(searchTitle.toLowerCase());
@@ -46,6 +39,35 @@ export default function NoticeManagement() {
     }
     setIsModalOpen(false);
   };
+
+  const fetchNotices = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get("/api/notices/all");
+
+      if (response.data.Status === 1) {
+        const formattedData = response.data.data.map((item: any) => ({
+          id: item.noticeId,
+          title: item.title,
+          categoryId: item.categoryId,
+          deptId: item.deptId,
+          content: item.content,
+          image: item.image,
+          pdf: item.pdf,
+        }));
+
+        setNotices(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching notices:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotices();
+  }, []);
 
   return (
     <div className="pt-24 px-6 pb-12 bg-slate-50 min-h-screen font-sans relative overflow-hidden">
@@ -116,47 +138,56 @@ export default function NoticeManagement() {
 
         {/* Table Section */}
         <div className="bg-white/90 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl overflow-hidden">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                <th className="p-6">ID</th>
-                <th className="p-6">Announcement Title</th>
-                <th className="p-6">Department</th>
-                <th className="p-6">Category</th>
-                <th className="p-6">Description</th>
-                <th className="p-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y  divide-slate-50">
-              {filteredNotices.map((n) => (
-                <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
-                  <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
-                  <td className="py-3 px-6">
-                    <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
-                  </td>
-                  <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
-                  <td className="py-3 px-6">
-                    <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
-                      {getCatLabel(n.categoryId)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-6">
-                    <p className=" text-slate-500 text-sm leading-none mb-1 italic">{n.title}</p>
-                  </td>
-                  <td className="py-3 px-6 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
-                        <HiOutlinePencil size={20} />
-                      </button>
-                      <button onClick={() => { setDeleteId(n.id); setIsDeleteOpen(true); }} className="p-2.5 text-red-400 hover:bg-red-50 rounded-xl transition-all">
-                        <HiOutlineTrash size={20} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center p-40">
+              <CircularProgress size={60} thickness={5} sx={{ color: '#2563eb' }} />
+              <p className="mt-4 text-slate-500 font-bold animate-pulse">Loading...</p>
+            </div>
+          ) : (
+            <>
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
+                    <th className="p-6">ID</th>
+                    <th className="p-6">Announcement Title</th>
+                    <th className="p-6">Department</th>
+                    <th className="p-6">Category</th>
+                    <th className="p-6">Description</th>
+                    <th className="p-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y  divide-slate-50">
+                  {filteredNotices.map((n) => (
+                    <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
+                      <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
+                      <td className="py-3 px-6">
+                        <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
+                      </td>
+                      <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
+                      <td className="py-3 px-6">
+                        <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
+                          {getCatLabel(n.categoryId)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-6">
+                        <p className=" text-slate-500 text-sm leading-none mb-1 italic">{n.content}</p>
+                      </td>
+                      <td className="py-3 px-6 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
+                            <HiOutlinePencil size={20} />
+                          </button>
+                          <button onClick={() => { setDeleteId(n.id); setIsDeleteOpen(true); }} className="p-2.5 text-red-400 hover:bg-red-50 rounded-xl transition-all">
+                            <HiOutlineTrash size={20} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
           {filteredNotices.length === 0 && (
             <div className="p-24 text-center">
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
