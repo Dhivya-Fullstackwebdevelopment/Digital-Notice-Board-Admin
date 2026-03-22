@@ -47,6 +47,17 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
     const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
     const [errors, setErrors] = useState<any>({});
 
+    const handleInputChange = (field: string, value: any) => {
+        setFormData((prev: any) => ({ ...prev, [field]: value }));
+        if (errors[field]) {
+            setErrors((prevErrors: any) => {
+                const newErrors = { ...prevErrors };
+                delete newErrors[field];
+                return newErrors;
+            });
+        }
+    };
+
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
@@ -110,7 +121,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md">
-            <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white relative">
+            <div className="bg-white w-full max-w-xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white relative flex flex-col">
                 <BackgroundEffect />
                 {/* Header - Impressive Light Theme */}
                 <div className="relative z-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 flex justify-between items-center border-b border-blue-100">
@@ -128,11 +139,11 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                     </button>
                 </div>
 
-                <div className="p-8 relative z-10">
+                <div className="p-8 relative z-10 overflow-y-auto flex-grow custom-scrollbar">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Announcement Title<span className="text-red-500">*</span></label>
-                            <input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
+                            <input value={formData.title} onChange={e => handleInputChange("title", e.target.value)}
                                 className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all  shadow-sm" />
                             <ErrorMsg message={errors.title} />
                         </div>
@@ -140,7 +151,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department<span className="text-red-500">*</span></label>
-                                <select value={formData.deptId} onChange={e => setFormData({ ...formData, deptId: e.target.value })}
+                                <select value={formData.deptId} onChange={e => handleInputChange("deptId", e.target.value)}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
                                     {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
                                 </select>
@@ -149,7 +160,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                     <input
                                         placeholder="Specify Department Name"
                                         value={formData.otherDept}
-                                        onChange={e => setFormData({ ...formData, otherDept: e.target.value })}
+                                        onChange={e => handleInputChange("otherDept", e.target.value)}
                                         className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
                                     />
                                 )}
@@ -157,7 +168,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category<span className="text-red-500">*</span></label>
-                                <select value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
+                                <select value={formData.categoryId} 
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
                                     <option value="0">All</option>
                                     {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
@@ -167,7 +178,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                     <input
                                         placeholder="Specify Category Name"
                                         value={formData.otherCategory}
-                                        onChange={e => setFormData({ ...formData, otherCategory: e.target.value })}
+                                        onChange={e => handleInputChange("categoryId", e.target.value)}
                                         className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
                                     />
                                 )}
@@ -177,7 +188,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Main Content<span className="text-red-500">*</span></label>
-                            <textarea rows={4} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })}
+                            <textarea rows={4} value={formData.content} onChange={e => handleInputChange("content", e.target.value)}
                                 className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
                             <ErrorMsg message={errors.content} />
                         </div>
