@@ -59,6 +59,51 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
     };
 
     useEffect(() => {
+        const fetchFullNoticeDetails = async () => {
+            if (initialData && initialData.id) {
+                setLoading(true);
+                try {
+                    const response = await apiClient.get(`/api/notices/${initialData.id}`);
+
+                    if (response.data.Status === 1) {
+                        const detail = response.data.data;
+                        setFormData({
+                            title: detail.title,
+                            categoryId: detail.categoryId,
+                            deptId: detail.deptId,
+                            content: detail.content,
+                            otherCategory: detail.otherCategory || "",
+                            otherDept: detail.otherDept || "",
+                            imageUrl: detail.image,
+                            pdfUrl: detail.pdf
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching notice details:", error);
+                    NotifyError("Failed to fetch announcement details.");
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setFormData({
+                    title: "",
+                    categoryId: "0",
+                    deptId: "0",
+                    content: "",
+                    otherCategory: "",
+                    otherDept: ""
+                });
+                setSelectedImage(null);
+                setSelectedPdf(null);
+            }
+        };
+
+        if (isOpen) {
+            fetchFullNoticeDetails();
+        }
+    }, [initialData, isOpen]);
+
+    useEffect(() => {
         if (initialData) {
             setFormData(initialData);
         } else {
@@ -98,15 +143,20 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
         }
 
         try {
-            const response = await apiClient.post("/api/notices/create", data, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            let response;
+            if (initialData) {
+                response = await apiClient.patch(`/api/notices/update/${initialData.id}`, data, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            } else {
+                response = await apiClient.post("/api/notices/create", data, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            }
 
             if (response.data.Status === 1) {
                 onSave(response.data.data);
-                NotifySuccess("Notice Added Successfully !")
+                NotifySuccess(initialData ? "Notice Updated Successfully!" : "Notice Added Successfully !");
                 onClose();
             }
         } catch (error) {
@@ -168,7 +218,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category<span className="text-red-500">*</span></label>
-                                <select value={formData.categoryId} 
+                                <select value={formData.categoryId}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
                                     <option value="0">All</option>
                                     {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
@@ -178,7 +228,7 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                     <input
                                         placeholder="Specify Category Name"
                                         value={formData.otherCategory}
-                                        onChange={e => handleInputChange("categoryId", e.target.value)}
+                                        onChange={e => handleInputChange("otherCategory", e.target.value)}
                                         className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
                                     />
                                 )}

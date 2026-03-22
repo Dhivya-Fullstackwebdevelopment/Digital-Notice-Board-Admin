@@ -32,7 +32,7 @@ export default function DeleteModal({ isOpen, onClose, onConfirm }: any) {
         <BackgroundEffect />
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Prevents event from bubbling
+            e.stopPropagation(); 
             onClose();
           }}
           className="absolute top-8 right-8 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all z-50 cursor-pointer"
@@ -47,7 +47,7 @@ export default function DeleteModal({ isOpen, onClose, onConfirm }: any) {
 
           <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Confirm Deletion</h3>
           <p className="text-slate-500 font-medium mb-10 leading-relaxed px-6 text-base">
-            Are you sure you want to remove this notice?
+            Are you sure you want to remove?
           </p>
 
           <div className="flex gap-3 justify-center mt-2">

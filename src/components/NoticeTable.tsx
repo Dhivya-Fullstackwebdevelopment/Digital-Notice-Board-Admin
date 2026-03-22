@@ -6,6 +6,7 @@ import { CATEGORIES, DEPARTMENTS, type Notice } from "../components/types/notice
 import { BackgroundEffect } from "./BackgroundEffect";
 import apiClient from "../api/apiUrl";
 import { CircularProgress } from '@mui/material';
+import { NotifyError, NotifySuccess } from "../Toast/ToastNotification";
 
 export default function NoticeManagement() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -68,6 +69,29 @@ export default function NoticeManagement() {
   useEffect(() => {
     fetchNotices();
   }, []);
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      const response = await apiClient.delete(`/api/notices/delete/${deleteId}`);
+
+      if (response.data.Status === 1) {
+        setNotices(notices.filter((n) => n.id !== deleteId));
+
+        NotifySuccess("Notice deleted successfully!");
+
+        setIsDeleteOpen(false);
+        setDeleteId(null);
+        fetchNotices();
+      } else {
+        NotifyError(response.data.message || "Failed to delete notice");
+      }
+    } catch (error) {
+      console.error("Delete Error:", error);
+      NotifyError("An error occurred while deleting the notice.");
+    }
+  };
 
   return (
     <div className="pt-24 px-6 pb-12 bg-slate-50 min-h-screen font-sans relative overflow-hidden">
@@ -208,11 +232,11 @@ export default function NoticeManagement() {
 
       <DeleteModal
         isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onConfirm={() => {
-          if (deleteId) setNotices(notices.filter(n => n.id !== deleteId));
+        onClose={() => {
           setIsDeleteOpen(false);
+          setDeleteId(null);
         }}
+        onConfirm={handleDelete}
       />
     </div>
   );
