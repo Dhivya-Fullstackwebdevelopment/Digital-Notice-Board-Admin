@@ -4,6 +4,7 @@ import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import NoticeManagement from './components/NoticeTable';
 import ComplaintManagement from './components/ComplaintTable';
+import { ToastNotification } from './Toast/ToastNotification';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
+        <ToastNotification />
       </div>
     </Router>
   );

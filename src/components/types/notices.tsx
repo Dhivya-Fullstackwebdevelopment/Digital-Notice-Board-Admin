@@ -23,6 +23,7 @@ export const CATEGORIES = [
     { id: "99", label: "Other" }
 ];
 export const DEPARTMENTS = [
+    { id: "0", label: "All" },
     { id: "1", label: "Computer Science & Engineering" },
     { id: "2", label: "Information Technology" },
     { id: "3", label: "Electronics & Communication" },

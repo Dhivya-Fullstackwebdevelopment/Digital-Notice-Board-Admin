@@ -3,23 +3,55 @@ import { HiOutlineX } from "react-icons/hi";
 import { CATEGORIES, DEPARTMENTS, type Notice } from "../types/notices";
 import { BackgroundEffect } from "../BackgroundEffect";
 import apiClient from "../../api/apiUrl";
+import { NotifySuccess, NotifyError } from "../../Toast/ToastNotification";
+import 'react-toastify/dist/ReactToastify.css';
+import { z } from "zod";
+import { ErrorMsg } from "../Reuse/ErrortextStyle";
+
+const noticeSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    categoryId: z.string(),
+    deptId: z.string(),
+    content: z.string().min(1, "Content is required"),
+    otherCategory: z.string().optional(),
+    otherDept: z.string().optional(),
+}).refine((data) => {
+    if (data.categoryId === "99") {
+        return data.otherCategory && data.otherCategory.trim().length > 0;
+    }
+    return true;
+}, {
+    message: "Please specify the Category name",
+    path: ["otherCategory"],
+}).refine((data) => {
+    if (data.deptId === "99") {
+        return data.otherDept && data.otherDept.trim().length > 0;
+    }
+    return true;
+}, {
+    message: "Please specify the Department name",
+    path: ["otherDept"],
+});
 
 export default function NoticeModal({ isOpen, onClose, onSave, initialData }: any) {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<any>({
         title: "",
-        categoryId: "1",
-        deptId: "1",
+        categoryId: "0",
+        deptId: "0",
         content: "",
+        otherCategory: "",
+        otherDept: "",
     });
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
+    const [errors, setErrors] = useState<any>({});
 
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
         } else {
-            setFormData({ title: "", categoryId: "1", deptId: "1", content: "" });
+            setFormData({ title: "", categoryId: "0", deptId: "0", content: "" });
             setSelectedImage(null);
             setSelectedPdf(null);
         }
@@ -27,18 +59,26 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrors({});
+
+        const validation = noticeSchema.safeParse(formData);
+
+        if (!validation.success) {
+            const fieldErrors = validation.error.flatten().fieldErrors;
+            setErrors(fieldErrors);
+            NotifyError("Please fill all required fields.");
+            return;
+        }
         setLoading(true);
 
-        // 1. Initialize FormData
         const data = new FormData();
 
-        // 2. Append Text Fields
         data.append("title", formData.title);
         data.append("categoryId", formData.categoryId);
         data.append("deptId", formData.deptId);
         data.append("content", formData.content);
-
-        // 3. Append Files (The keys "image" and "pdf" must match your backend expectations)
+        if (formData.categoryId === "99") data.append("otherCategory", formData.otherCategory);
+        if (formData.deptId === "99") data.append("otherDept", formData.otherDept);
         if (selectedImage) {
             data.append("image", selectedImage);
         }
@@ -54,12 +94,13 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
             });
 
             if (response.data.Status === 1) {
-                onSave(response.data.data); // Notify parent to refresh
+                onSave(response.data.data);
+                NotifySuccess("Notice Added Successfully !")
                 onClose();
             }
         } catch (error) {
             console.error("Error creating notice:", error);
-            alert("Failed to create notice. Check console for details.");
+            NotifyError("Failed to create notice. Check console for details.");
         } finally {
             setLoading(false);
         }
@@ -71,7 +112,6 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md">
             <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white relative">
                 <BackgroundEffect />
-
                 {/* Header - Impressive Light Theme */}
                 <div className="relative z-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 flex justify-between items-center border-b border-blue-100">
                     <div>
@@ -91,34 +131,55 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                 <div className="p-8 relative z-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Announcement Title</label>
-                            <input required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Announcement Title<span className="text-red-500">*</span></label>
+                            <input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
                                 className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all  shadow-sm" />
+                            <ErrorMsg message={errors.title} />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department<span className="text-red-500">*</span></label>
                                 <select value={formData.deptId} onChange={e => setFormData({ ...formData, deptId: e.target.value })}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                                    <option value="0">All Departments</option>
                                     {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
                                 </select>
+                                <ErrorMsg message={errors.deptId} />
+                                {formData.deptId === "99" && (
+                                    <input
+                                        placeholder="Specify Department Name"
+                                        value={formData.otherDept}
+                                        onChange={e => setFormData({ ...formData, otherDept: e.target.value })}
+                                        className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
+                                    />
+                                )}
+                                <ErrorMsg message={errors.otherDept} />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category<span className="text-red-500">*</span></label>
                                 <select value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                                    <option value="">All</option>
+                                    <option value="0">All</option>
                                     {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                                 </select>
+                                <ErrorMsg message={errors.categoryId} />
+                                {formData.categoryId === "99" && (
+                                    <input
+                                        placeholder="Specify Category Name"
+                                        value={formData.otherCategory}
+                                        onChange={e => setFormData({ ...formData, otherCategory: e.target.value })}
+                                        className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
+                                    />
+                                )}
+                                <ErrorMsg message={errors.otherCategory} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Main Content</label>
-                            <textarea required rows={4} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })}
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Main Content<span className="text-red-500">*</span></label>
+                            <textarea rows={4} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })}
                                 className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm" />
+                            <ErrorMsg message={errors.content} />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -133,7 +194,10 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                         accept="image/*"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
-                                            if (file) setFormData({ ...formData, imageUrl: URL.createObjectURL(file) });
+                                            if (file) {
+                                                setSelectedImage(file);
+                                                setFormData({ ...formData, imageUrl: file.name });
+                                            }
                                         }}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                     />
@@ -154,7 +218,10 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                                         accept=".pdf"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
-                                            if (file) setFormData({ ...formData, pdfUrl: file.name });
+                                            if (file) {
+                                                setSelectedPdf(file);
+                                                setFormData({ ...formData, pdfUrl: file.name });
+                                            }
                                         }}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                     />
