@@ -122,57 +122,69 @@ export default function ComplaintManagement() {
 
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl overflow-hidden">
-          {loading ? (
-            <div className="flex justify-center p-20"><CircularProgress /></div>
-          ) : (
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                  <th className="p-6">Student & ID</th>
-                  <th className="p-6">Category</th>
-                  <th className="p-6">Department</th>
-                  <th className="p-6">Subject</th>
-                  <th className="p-6">Status</th>
-                  <th className="p-6">Resolution</th>
-                  <th className="p-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredComplaints.map((c) => (
-                  <tr key={c._id} className="hover:bg-blue-50/30 border-b border-slate-200 transition-colors group">
-                    <td className="py-3 px-6">
-                      <p className="font-bold text-slate-800 text-sm">{c.studentName}</p>
-                      <p className="text-[10px] font-black text-blue-500 uppercase">{c.complaintId}</p>
-                    </td>
-                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
-                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td>
-                    <td className="py-3 px-6 text-sm text-slate-600">{c.subject}</td>
-                    <td className="py-3 px-6">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "pending"
-                          ? "bg-amber-100 text-amber-600"
-                          : c.status === "inprogress"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-emerald-100 text-emerald-600"
-                        }`}>
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.resolution}</td>
-                    <td className="py-3 px-6 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => { setSelectedComplaint(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
-                          <HiOutlinePencil size={18} />
-                        </button>
-                        <button onClick={() => { setDeleteId(c.complaintId); setIsDeleteOpen(true); }} className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-all">
-                          <HiOutlineTrash size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
+            {loading ? (
+              <div className="flex justify-center p-20"><CircularProgress /></div>
+            ) : (
+              <>
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
+                      <th className="p-6">Student & ID</th>
+                      <th className="p-6">Category</th>
+                      <th className="p-6">Department</th>
+                      <th className="p-6">Subject</th>
+                      <th className="p-6">Status</th>
+                      <th className="p-6">Resolution</th>
+                      <th className="p-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredComplaints.map((c) => (
+                      <tr key={c._id} className="hover:bg-blue-50/30 border-b border-slate-200 transition-colors group">
+                        <td className="py-3 px-6">
+                          <p className="font-bold text-slate-800 text-sm">{c.studentName}</p>
+                          <p className="text-[10px] font-black text-blue-500 uppercase">{c.complaintId}</p>
+                        </td>
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td>
+                        <td className="py-3 px-6 text-sm text-slate-600">{c.subject}</td>
+                        <td className="py-3 px-6">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "pending"
+                            ? "bg-amber-100 text-amber-600"
+                            : c.status === "inprogress"
+                              ? "bg-blue-100 text-blue-600"
+                              : "bg-emerald-100 text-emerald-600"
+                            }`}>
+                            {c.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.resolution}</td>
+                        <td className="py-3 px-6 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => { setSelectedComplaint(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
+                              <HiOutlinePencil size={18} />
+                            </button>
+                            <button onClick={() => { setDeleteId(c.complaintId); setIsDeleteOpen(true); }} className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-all">
+                              <HiOutlineTrash size={18} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredComplaints.length === 0 && (
+                  <div className="p-24 text-center">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                      <HiOutlineFilter size={32} />
+                    </div>
+                    <p className="text-slate-400 font-bold">No complaints found matching your filters.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -188,6 +200,6 @@ export default function ComplaintManagement() {
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDelete}
       />
-    </div>
+    </div >
   );
 }
