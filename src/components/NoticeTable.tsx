@@ -7,6 +7,7 @@ import { BackgroundEffect } from "./BackgroundEffect";
 import apiClient from "../api/apiUrl";
 import { CircularProgress } from '@mui/material';
 import { NotifyError, NotifySuccess } from "../Toast/ToastNotification";
+import { FaChevronDown } from "react-icons/fa";
 
 export default function NoticeManagement() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -31,14 +32,9 @@ export default function NoticeManagement() {
     });
   }, [notices, searchTitle, filterDept, filterCat]);
 
-  const handleSave = (data: Notice) => {
-    if (selectedNotice) {
-      setNotices(notices.map(n => n.id === selectedNotice.id ? data : n));
-    } else {
-      const newNotice = { ...data, id: `NTC${Math.floor(100 + Math.random() * 900)}` };
-      setNotices([newNotice, ...notices]);
-    }
+  const handleSave = async () => {
     setIsModalOpen(false);
+    await fetchNotices();
   };
 
   const fetchNotices = async () => {
@@ -130,26 +126,41 @@ export default function NoticeManagement() {
           </div>
 
           <div className="w-full md:w-64 space-y-2">
-            <label className="text-[10px] font-black text-slate-300 uppercase ml-1">Department Filter</label>
-            <select
-              value={filterDept}
-              onChange={(e) => setFilterDept(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
-            >
-              <option value="0">All Departments</option>
-              {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
-            </select>
+            <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+              Department Filter
+            </label>
+
+            <div className="relative">
+              <select
+                value={filterDept}
+                onChange={(e) => setFilterDept(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 pr-10 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
+              >
+                {DEPARTMENTS.map(d => (
+                  <option key={d.id} value={d.id}>{d.label}</option>
+                ))}
+              </select>
+              <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            </div>
           </div>
 
           <div className="w-full md:w-64 space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Category Filter</label>
-            <select
-              value={filterCat}
-              onChange={(e) => setFilterCat(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
-            >
-              {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-            </select>
+            <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+              Category Filter
+            </label>
+
+            <div className="relative">
+              <select
+                value={filterCat}
+                onChange={(e) => setFilterCat(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 pr-10 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer appearance-none"
+              >
+                {CATEGORIES.map(c => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
+              </select>
+              <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            </div>
           </div>
 
           <button
@@ -161,65 +172,67 @@ export default function NoticeManagement() {
         </div>
 
         {/* Table Section */}
-        <div className="bg-white/90 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl overflow-hidden">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-40">
-              <CircularProgress size={60} thickness={5} sx={{ color: '#2563eb' }} />
-              <p className="mt-4 text-slate-500 font-bold animate-pulse">Loading...</p>
-            </div>
-          ) : (
-            <>
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                    <th className="p-6">ID</th>
-                    <th className="p-6">Announcement Title</th>
-                    <th className="p-6">Department</th>
-                    <th className="p-6">Category</th>
-                    <th className="p-6">Description</th>
-                    <th className="p-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y  divide-slate-50">
-                  {filteredNotices.map((n) => (
-                    <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
-                      <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
-                      <td className="py-3 px-6">
-                        <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
-                      </td>
-                      <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
-                      <td className="py-3 px-6">
-                        <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
-                          {getCatLabel(n.categoryId)}
-                        </span>
-                      </td>
-                      <td className="py-3 px-6">
-                        <p className=" text-slate-500 text-sm leading-none mb-1 italic">{n.content}</p>
-                      </td>
-                      <td className="py-3 px-6 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
-                            <HiOutlinePencil size={20} />
-                          </button>
-                          <button onClick={() => { setDeleteId(n.id); setIsDeleteOpen(true); }} className="p-2.5 text-red-400 hover:bg-red-50 rounded-xl transition-all">
-                            <HiOutlineTrash size={20} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-          {filteredNotices.length === 0 && (
-            <div className="p-24 text-center">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-                <HiOutlineFilter size={32} />
+        <div className="bg-white/90 backdrop-blur-md rounded-[1.5rem] border border-white shadow-xl overflow-hidden">
+          <div className="max-h-[500px] overflow-y-auto">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center p-40">
+                <CircularProgress size={60} thickness={5} sx={{ color: '#2563eb' }} />
+                <p className="mt-4 text-slate-500 font-bold animate-pulse">Loading...</p>
               </div>
-              <p className="text-slate-400 font-bold">No announcements found matching your filters.</p>
-            </div>
-          )}
+            ) : (
+              <>
+                <table className="w-full text-left">
+                  <thead className="sticky top-0 bg-blue-50 z-10">
+                    <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
+                      <th className="p-6 w-[10%]">ID</th>
+                      <th className="p-6 w-[20%]">Announcement Title</th>
+                      <th className="p-6 w-[15%]">Department</th>
+                      <th className="p-6 w-[15%]">Category</th>
+                      <th className="p-6 w-[25%]">Description</th>
+                      <th className="p-6 w-[15%] text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y  divide-slate-50">
+                    {filteredNotices.slice(0, 10).map((n) => (
+                      <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
+                        <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
+                        <td className="py-3 px-6">
+                          <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
+                        </td>
+                        <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
+                        <td className="py-3 px-6">
+                          <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
+                            {getCatLabel(n.categoryId)}
+                          </span>
+                        </td>
+                        <td className="py-3 px-6">
+                          <p className=" text-slate-500 text-sm leading-none mb-1 italic">{n.content}</p>
+                        </td>
+                        <td className="py-3 px-6 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => { setSelectedNotice(n); setIsModalOpen(true); }} className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
+                              <HiOutlinePencil size={20} />
+                            </button>
+                            <button onClick={() => { setDeleteId(n.id); setIsDeleteOpen(true); }} className="p-2.5 text-red-400 hover:bg-red-50 rounded-xl transition-all">
+                              <HiOutlineTrash size={20} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+            {filteredNotices.length === 0 && (
+              <div className="p-24 text-center">
+                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                  <HiOutlineFilter size={32} />
+                </div>
+                <p className="text-slate-400 font-bold">No announcements found matching your filters.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -1,49 +1,76 @@
-import { useState, useMemo } from "react";
-import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiSearch } from "react-icons/hi";
+import { useState, useMemo, useEffect } from "react";
+import { HiOutlinePencil, HiOutlineTrash, HiPlus, HiSearch, HiOutlineFilter } from "react-icons/hi";
 import ComplaintModal from "../components/Complaintpopups/ComplaintModal";
-import DeleteModal from "../components/Noticespopups/DeleteModal"; // Reusing your existing delete modal
+import DeleteModal from "../components/Noticespopups/DeleteModal";
 import { BackgroundEffect } from "./BackgroundEffect";
+import apiClient from "../api/apiUrl"; // Ensure this path is correct
+import { CircularProgress } from '@mui/material';
+import { NotifyError, NotifySuccess } from "../Toast/ToastNotification";
 
 export default function ComplaintManagement() {
-  const [complaints, setComplaints] = useState([
-    { id: 1, name: "Dhivya S", compID: "COMP1", category: "Anti-Ragging", dept: "Computer Science", subject: "Issue regarding labs", status: "Pending", description: "Detailed description here..." },
-    { id: 2, name: "Dinesh", compID: "COMP2", category: "Harassment", dept: "Electronics", subject: "Issue regarding hostel", status: "In Progress", description: "Another description here..." },
-  ]);
-
-  // Search & Filter States
+  const [complaints, setComplaints] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
 
-  // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<any | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  // Filter Logic
+  // 1. Fetch Data from API
+  const fetchComplaints = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get("/api/complaints/all");
+      if (response.data.Status === 1) {
+        setComplaints(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      NotifyError("Failed to fetch complaints");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchComplaints(); }, []);
+
+  // 2. Filter Logic
   const filteredComplaints = useMemo(() => {
     return complaints.filter((c) => {
-      const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.compID.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = filterStatus === "All" || c.status === filterStatus;
+      const matchesSearch = c.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.complaintId.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = filterStatus === "All" || c.status.toLowerCase() === filterStatus.toLowerCase();
       return matchesSearch && matchesStatus;
     });
   }, [complaints, searchQuery, filterStatus]);
 
-  const handleSave = (data: any) => {
-    if (selectedComplaint) {
-      setComplaints(complaints.map(c => c.id === selectedComplaint.id ? data : c));
-    } else {
-      const newComplaint = { ...data, id: Date.now(), compID: `COMP${Math.floor(100 + Math.random() * 900)}` };
-      setComplaints([newComplaint, ...complaints]);
-    }
+  // 3. Handle Save (Refresh list)
+  const handleSave = () => {
     setIsModalOpen(false);
+    fetchComplaints();
+  };
+
+  // 4. Handle Delete
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const response = await apiClient.delete(`/api/complaints/delete/${deleteId}`);
+      if (response.data.Status === 1) {
+        NotifySuccess("Complaint deleted successfully");
+        fetchComplaints();
+      }
+    } catch (error) {
+      NotifyError("Delete failed");
+    } finally {
+      setIsDeleteOpen(false);
+    }
   };
 
   return (
     <div className="pt-24 px-6 pb-12 bg-slate-50 min-h-screen relative overflow-hidden">
       <BackgroundEffect />
-
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
@@ -57,7 +84,6 @@ export default function ComplaintManagement() {
           </button>
         </div>
 
-        {/* Filters */}
         <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] p-6 mb-8 shadow-sm border border-white flex flex-wrap items-end gap-6">
           <div className="flex-1 min-w-[250px] space-y-2">
             <label className="text-[10px] font-black text-slate-500 uppercase ml-1">Search Name or ID</label>
@@ -86,7 +112,7 @@ export default function ComplaintManagement() {
               <option value="Resolved">Resolved</option>
             </select>
           </div>
-                    <button
+          <button
             onClick={() => { setSearchQuery(""); setFilterStatus("All"); }}
             className="px-6 py-3 text-white bg-blue-500 hover:bg-white border-2 hover:border-blue-500 hover:text-blue-500  rounded-3xl font-black text-[10px] uppercase tracking-widest transition-colors"
           >
@@ -96,50 +122,56 @@ export default function ComplaintManagement() {
 
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl overflow-hidden">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                <th className="p-6">Student & ID</th>
-                <th className="p-6">Category</th>
-                <th className="p-6">Subject</th>
-                <th className="p-6">Status</th>
-                <th className="p-6">Description</th>
-                <th className="p-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredComplaints.map((c) => (
-                <tr key={c.id} className="hover:bg-blue-50/30 border-1 border-b  border-slate-200 transition-colors group">
-                  <td className="py-3 px-6">
-                    <p className="font-bold text-slate-800 text-sm">{c.name}</p>
-                    <p className="text-[10px] font-black text-blue-500 uppercase">{c.compID}</p>
-                  </td>
-                  <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.category}</td>
-                  <td className="py-3 px-6text-sm text-slate-600 italic">{c.subject}</td>
-                  <td className="py-3 px-6">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "Pending" ? "bg-amber-100 text-amber-600" :
-                        c.status === "In Progress" ? "bg-blue-100 text-blue-600" : "bg-emerald-100 text-emerald-600"
-                      }`}>
-                      {c.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-6 text-sm text-slate-600 italic">{c.description}</td>
-                  <td className="py-3 px-6text-right">
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => { setSelectedComplaint(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
-                        <HiOutlinePencil size={18} />
-                      </button>
-                      <button onClick={() => { setDeleteId(c.id); setIsDeleteOpen(true); }} className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-all">
-                        <HiOutlineTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
+          {loading ? (
+            <div className="flex justify-center p-20"><CircularProgress /></div>
+          ) : (
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
+                  <th className="p-6">Student & ID</th>
+                  <th className="p-6">Category</th>
+                  <th className="p-6">Department</th>
+                  <th className="p-6">Subject</th>
+                  <th className="p-6">Status</th>
+                  <th className="p-6">Resolution</th>
+                  <th className="p-6 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredComplaints.length === 0 && (
-            <div className="p-20 text-center text-slate-400 font-bold">No records found.</div>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredComplaints.map((c) => (
+                  <tr key={c._id} className="hover:bg-blue-50/30 border-b border-slate-200 transition-colors group">
+                    <td className="py-3 px-6">
+                      <p className="font-bold text-slate-800 text-sm">{c.studentName}</p>
+                      <p className="text-[10px] font-black text-blue-500 uppercase">{c.complaintId}</p>
+                    </td>
+                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
+                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td>
+                    <td className="py-3 px-6 text-sm text-slate-600">{c.subject}</td>
+                    <td className="py-3 px-6">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "pending"
+                          ? "bg-amber-100 text-amber-600"
+                          : c.status === "inprogress"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-emerald-100 text-emerald-600"
+                        }`}>
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.resolution}</td>
+                    <td className="py-3 px-6 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => { setSelectedComplaint(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all">
+                          <HiOutlinePencil size={18} />
+                        </button>
+                        <button onClick={() => { setDeleteId(c.complaintId); setIsDeleteOpen(true); }} className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-all">
+                          <HiOutlineTrash size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
@@ -154,10 +186,7 @@ export default function ComplaintManagement() {
       <DeleteModal
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
-        onConfirm={() => {
-          setComplaints(complaints.filter(c => c.id !== deleteId));
-          setIsDeleteOpen(false);
-        }}
+        onConfirm={handleDelete}
       />
     </div>
   );

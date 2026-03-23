@@ -37,6 +37,20 @@ export const DEPARTMENTS = [
     { id: "99", label: "Other" }
 ];
 
+export const COMPLAINTDEPARTMENTS = [
+    { id: "1", label: "Computer Science & Engineering" },
+    { id: "2", label: "Information Technology" },
+    { id: "3", label: "Electronics & Communication" },
+    { id: "4", label: "Electrical & Electronics" },
+    { id: "5", label: "Mechanical Engineering" },
+    { id: "6", label: "Civil Engineering" },
+    { id: "7", label: "Artificial Intelligence" },
+    { id: "8", label: "MBA" },
+    { id: "9", label: "BBA" },
+    { id: "10", label: "B.Com" },
+    { id: "99", label: "Other" }
+];
+
 export const ISSUESCATEGORIES = [
     { id: "1", label: "Internal Marks Issue" },
     { id: "2", label: "Attendance Shortage Dispute" },
