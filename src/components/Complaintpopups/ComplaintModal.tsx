@@ -7,7 +7,6 @@ import apiClient from "../../api/apiUrl";
 import { z } from "zod";
 import { ErrorMsg } from "../Reuse/ErrortextStyle";
 
-// 1. Define the Zod Schema
 const complaintSchema = z.object({
   studentName: z.string().optional(),
   status: z.string().min(1, "Status is required"),

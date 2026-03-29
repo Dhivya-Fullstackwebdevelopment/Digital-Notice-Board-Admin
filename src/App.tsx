@@ -6,6 +6,7 @@ import NoticeManagement from './components/NoticeTable';
 import ComplaintManagement from './components/ComplaintTable';
 import { ToastNotification } from './Toast/ToastNotification';
 import NotificationPage from './components/NotificationPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -15,11 +16,10 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<AdminLogin />} />
-            <Route path="/dashboard" element={<AdminDashboard />} />
-            <Route path="/notices" element={<NoticeManagement />} />
-            <Route path="/complaints" element={<ComplaintManagement />} />
-            <Route path="/notifications" element={<NotificationPage />} />
-            {/* Fallback to login */}
+            <Route path="/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/notices" element={<ProtectedRoute><NoticeManagement /></ProtectedRoute>} />
+            <Route path="/complaints" element={<ProtectedRoute><ComplaintManagement /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><NotificationPage /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
