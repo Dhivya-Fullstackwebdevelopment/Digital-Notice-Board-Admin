@@ -20,8 +20,19 @@ export default function NoticeManagement() {
   const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const getDeptLabel = (id: string) => DEPARTMENTS.find(d => d.id === id)?.label || "N/A";
-  const getCatLabel = (id: string) => CATEGORIES.find(c => c.id === id)?.label || "N/A";
+  const getDeptLabel = (deptId: string, otherDept?: string) => {
+    if (deptId === "99") {
+      return otherDept ? `Other (${otherDept})` : "Other";
+    }
+    return DEPARTMENTS.find(d => d.id === deptId)?.label || "N/A";
+  };
+
+  const getCatLabel = (catId: string, otherCat?: string) => {
+    if (catId === "99") {
+      return otherCat ? `Other (${otherCat})` : "Other";
+    }
+    return CATEGORIES.find(c => c.id === catId)?.label || "N/A";
+  };
 
   const filteredNotices = useMemo(() => {
     return notices.filter((n) => {
@@ -51,6 +62,9 @@ export default function NoticeManagement() {
           content: item.content,
           image: item.image,
           pdf: item.pdf,
+          otherCategory: item.otherCategory,
+          otherDept: item.otherDept,
+          createdAt: item.createdAt,
         }));
 
         setNotices(formattedData);
@@ -97,7 +111,7 @@ export default function NoticeManagement() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Notice <span className="text-blue-600">Management</span></h1>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Notice <span className="text-blue-600">Management</span> <span className="text-black text-xl">({notices.length})</span></h1>
             <div className="flex items-center gap-2 mt-2">
               <div className="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-black rounded uppercase">Admin</div>
               <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Campus Communications Control</p>
@@ -184,7 +198,8 @@ export default function NoticeManagement() {
                 <table className="w-full text-left">
                   <thead className="sticky top-0 bg-blue-50 z-10">
                     <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                      <th className="p-6 w-[10%]">ID</th>
+                      <th className="p-6 w-[10%]">Date</th>
+                      <th className="p-6 w-[10%]">Notice ID</th>
                       <th className="p-6 w-[20%]">Announcement Title</th>
                       <th className="p-6 w-[15%]">Department</th>
                       <th className="p-6 w-[15%]">Category</th>
@@ -195,14 +210,19 @@ export default function NoticeManagement() {
                   <tbody className="divide-y  divide-slate-50">
                     {filteredNotices.slice(0, 10).map((n) => (
                       <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">
+                          {n.createdAt ? n.createdAt.split("T")[0] : "N/A"}
+                        </td>
                         <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
                         <td className="py-3 px-6">
                           <p className="font-bold text-slate-800 text-sm leading-none mb-1">{n.title}</p>
                         </td>
-                        <td className="py-3 px-6 text-slate-500 text-xs font-bold">{getDeptLabel(n.deptId)}</td>
+                        <td className="py-3 px-6 text-slate-500 text-xs font-bold">
+                          {getDeptLabel(n.deptId, n.otherDept)}
+                        </td>
                         <td className="py-3 px-6">
                           <span className="bg-white text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 uppercase shadow-sm">
-                            {getCatLabel(n.categoryId)}
+                            {getCatLabel(n.categoryId, n.otherCategory)}
                           </span>
                         </td>
                         <td className="py-3 px-6">

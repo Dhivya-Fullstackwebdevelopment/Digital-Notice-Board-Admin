@@ -3,9 +3,12 @@ export interface Notice {
     title: string;
     categoryId: string;
     deptId: string;
+    otherDept: string;
+    otherCategory: string;
     content: string;
     imageUrl?: string;
     pdfUrl?: string;
+    createdAt: string;
 }
 
 export const CATEGORIES = [

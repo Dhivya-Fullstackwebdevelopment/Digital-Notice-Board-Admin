@@ -60,22 +60,27 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* RIGHT: Black Theme Logout Button */}
-      <div className="shrink-0">
+      <div className="flex items-center gap-4 shrink-0">
         {isAdmin ? (
-          <button
-            onClick={handleLogout}
-            className="group relative flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest overflow-hidden transition-all hover:bg-black hover:shadow-2xl hover:shadow-blue-200 active:scale-95 cursor-pointer"
-          >
-            <span className="relative z-10">Logout</span>
-            <HiOutlineLogout size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-          </button>
-        ) : (
-          <div className="p-2 bg-slate-50 border border-slate-100 rounded-full text-slate-400 cursor-pointer hover:text-blue-600 transition-colors">
-            <HiOutlineBell size={22} />
-          </div>
-        )}
+          <>
+            {/* Notification Icon */}
+            <button className="relative p-2 bg-slate-50 border border-slate-100 rounded-full text-slate-400 cursor-pointer hover:text-blue-600 transition-colors group">
+              <HiOutlineBell size={22} />
+              {/* Red notification dot */}
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="group relative flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest overflow-hidden transition-all hover:bg-black hover:shadow-2xl hover:shadow-blue-200 active:scale-95 cursor-pointer"
+            >
+              <span className="relative z-10">Logout</span>
+              <HiOutlineLogout size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-20 transition-opacity" />
+            </button>
+          </>
+        ) : null}
       </div>
     </nav>
   );

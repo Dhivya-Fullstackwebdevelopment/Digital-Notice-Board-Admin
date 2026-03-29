@@ -75,7 +75,7 @@ export default function ComplaintManagement() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Complaint <span className="text-blue-600">Management</span></h1>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Complaint <span className="text-blue-600">Management</span> <span className="text-black text-xl">({complaints.length})</span></h1>
             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">Authorized Personnel Access Only</p>
           </div>
           <button onClick={() => { setSelectedComplaint(null); setIsModalOpen(true); }}
@@ -130,6 +130,7 @@ export default function ComplaintManagement() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
+                      <th className="p-6">Date</th>
                       <th className="p-6">Student & ID</th>
                       <th className="p-6">Category</th>
                       <th className="p-6">Department</th>
@@ -142,12 +143,32 @@ export default function ComplaintManagement() {
                   <tbody className="divide-y divide-slate-100">
                     {filteredComplaints.map((c) => (
                       <tr key={c._id} className="hover:bg-blue-50/30 border-b border-slate-200 transition-colors group">
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">
+                          {c.createdAt ? c.createdAt.split("T")[0] : "N/A"}
+                        </td>
                         <td className="py-3 px-6">
                           <p className="font-bold text-slate-800 text-sm">{c.studentName}</p>
                           <p className="text-[10px] font-black text-blue-500 uppercase">{c.complaintId}</p>
                         </td>
-                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
-                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td>
+                        {/* <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td> */}
+                        {/* UPDATED CATEGORY */}
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">
+                          {c.categoryId === "99" ? (
+                            <span className="text-slate-500">Other ({c.otherCategory})</span>
+                          ) : (
+                            c.categoryName
+                          )}
+                        </td>
+
+                        {/* UPDATED DEPARTMENT */}
+                        <td className="py-3 px-6 text-xs font-bold text-slate-500">
+                          {c.deptId === "99" ? (
+                            <span className="text-slate-500">Other ({c.otherDept})</span>
+                          ) : (
+                            c.deptName
+                          )}
+                        </td>
                         <td className="py-3 px-6 text-sm text-slate-600">{c.subject}</td>
                         <td className="py-3 px-6">
                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${c.status === "pending"
