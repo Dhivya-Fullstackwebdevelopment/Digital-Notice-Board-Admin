@@ -18,6 +18,29 @@ export default function ComplaintManagement() {
   const [selectedComplaint, setSelectedComplaint] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const formatIndianDateTime = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+
+    // Date Part: 2026-04-04
+    const datePart = date.toLocaleDateString('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).split('/').reverse().join('-');
+
+    // Time Part: 3:30 PM
+    const timePart = date.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    return `${datePart}, ${timePart}`;
+  };
+
   // 1. Fetch Data from API
   const fetchComplaints = async () => {
     setLoading(true);
@@ -128,9 +151,9 @@ export default function ComplaintManagement() {
             ) : (
               <>
                 <table className="w-full text-left">
-                  <thead>
+                  <thead className="sticky top-0 bg-blue-50 z-10">
                     <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                      <th className="p-6">Date</th>
+                      <th className="p-6">Date & Time</th>
                       <th className="p-6">Student & ID</th>
                       <th className="p-6">Category</th>
                       <th className="p-6">Department</th>
@@ -144,15 +167,13 @@ export default function ComplaintManagement() {
                     {filteredComplaints.map((c) => (
                       <tr key={c._id} className="hover:bg-blue-50/30 border-b border-slate-200 transition-colors group">
                         <td className="py-3 px-6 text-xs font-bold text-slate-500">
-                          {c.createdAt ? c.createdAt.split("T")[0] : "N/A"}
+                         <span className="text-slate-800">{formatIndianDateTime(c.createdAt).split(',')[0]}</span>
+                         <span className="text-slate-800">{formatIndianDateTime(c.createdAt).split(',')[1]}</span>
                         </td>
                         <td className="py-3 px-6">
                           <p className="font-bold text-slate-800 text-sm">{c.studentName}</p>
                           <p className="text-[10px] font-black text-blue-500 uppercase">{c.complaintId}</p>
                         </td>
-                        {/* <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.categoryName || c.otherCategory}</td>
-                        <td className="py-3 px-6 text-xs font-bold text-slate-500">{c.deptName || c.otherDept}</td> */}
-                        {/* UPDATED CATEGORY */}
                         <td className="py-3 px-6 text-xs font-bold text-slate-500">
                           {c.categoryId === "99" ? (
                             <span className="text-slate-500">Other ({c.otherCategory})</span>

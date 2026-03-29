@@ -63,13 +63,13 @@ export default function Navbar() {
       <div className="flex items-center gap-4 shrink-0">
         {isAdmin ? (
           <>
-            {/* Notification Icon */}
-            <button className="relative p-2 bg-slate-50 border border-slate-100 rounded-full text-slate-400 cursor-pointer hover:text-blue-600 transition-colors group">
+            <Link
+              to="/notifications"
+              className="relative p-2 bg-slate-50 border border-slate-100 rounded-full text-slate-400 cursor-pointer hover:text-blue-600 transition-colors group"
+            >
               <HiOutlineBell size={22} />
-              {/* Red notification dot */}
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-
+            </Link>
             {/* Logout Button */}
             <button
               onClick={handleLogout}

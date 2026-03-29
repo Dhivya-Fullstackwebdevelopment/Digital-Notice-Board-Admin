@@ -3,7 +3,6 @@ import { HiOutlineBell, HiOutlineChatAlt2, HiOutlineUsers, HiOutlineClock, HiOut
 import { Link } from "react-router-dom";
 import { BackgroundEffect } from "./BackgroundEffect";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import axios from "axios"; // Ensure axios is installed
 import apiClient from "../api/apiUrl";
 
 export default function AdminDashboard() {
@@ -13,7 +12,6 @@ export default function AdminDashboard() {
     complaints: { total: 0, pending: 0, inProgress: 0, resolved: 0 }
   });
 
-  // 1. Fetch real data from backend
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -28,21 +26,18 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  // 2. Define Main Overview Cards
   const mainStats = [
     { label: "Total Students", count: data.totalStudents, icon: <HiOutlineUsers />, color: "bg-emerald-500", hex: "#10b981", shadow: "shadow-emerald-200", link: "#" },
     { label: "Total Notices", count: data.totalNotices, icon: <HiOutlineBell />, color: "bg-blue-500", hex: "#3b82f6", shadow: "shadow-blue-200", link: "/notices" },
     { label: "Total Complaints", count: data.complaints.total, icon: <HiOutlineChatAlt2 />, color: "bg-slate-700", hex: "#334155", shadow: "shadow-slate-200", link: "/complaints" },
   ];
 
-  // 3. Define Complaint Status Cards
   const statusStats = [
     { label: "Pending", count: data.complaints.pending, icon: <HiOutlineClock />, color: "bg-rose-500", hex: "#f43f5e" },
     { label: "In Progress", count: data.complaints.inProgress, icon: <HiOutlineRefresh />, color: "bg-amber-500", hex: "#f59e0b" },
     { label: "Resolved", count: data.complaints.resolved, icon: <HiOutlineCheckCircle />, color: "bg-emerald-400", hex: "#34d399" },
   ];
 
-  // 4. Chart Data specifically for Complaint Status
   const chartData = statusStats.map(s => ({
     name: s.label,
     value: s.count,

@@ -43,6 +43,29 @@ export default function NoticeManagement() {
     });
   }, [notices, searchTitle, filterDept, filterCat]);
 
+  const formatIndianDateTime = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+
+    // Date Part: 2026-04-04
+    const datePart = date.toLocaleDateString('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).split('/').reverse().join('-');
+
+    // Time Part: 3:30 PM
+    const timePart = date.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    return `${datePart}, ${timePart}`;
+  };
+
   const handleSave = async () => {
     setIsModalOpen(false);
     await fetchNotices();
@@ -198,7 +221,7 @@ export default function NoticeManagement() {
                 <table className="w-full text-left">
                   <thead className="sticky top-0 bg-blue-50 z-10">
                     <tr className="bg-blue-50 text-blue-600 text-[10px] uppercase tracking-widest font-black border-b border-slate-200">
-                      <th className="p-6 w-[10%]">Date</th>
+                      <th className="p-6 w-[10%]">Date & Time</th>
                       <th className="p-6 w-[10%]">Notice ID</th>
                       <th className="p-6 w-[20%]">Announcement Title</th>
                       <th className="p-6 w-[15%]">Department</th>
@@ -211,7 +234,8 @@ export default function NoticeManagement() {
                     {filteredNotices.slice(0, 10).map((n) => (
                       <tr key={n.id} className="hover:bg-blue-50/30 transition-colors group border-b border-1 border-slate-200">
                         <td className="py-3 px-6 text-xs font-bold text-slate-500">
-                          {n.createdAt ? n.createdAt.split("T")[0] : "N/A"}
+                          <span className="text-slate-800">{formatIndianDateTime(n.createdAt).split(',')[0]}</span>
+                          <span className="text-slate-800">{formatIndianDateTime(n.createdAt).split(',')[1]}</span>
                         </td>
                         <td className="py-3 px-6 font-black text-slate-400 text-[11px]">{n.id}</td>
                         <td className="py-3 px-6">
