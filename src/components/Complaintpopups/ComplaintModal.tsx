@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { HiOutlineX } from "react-icons/hi";
+import { HiChevronDown, HiOutlineX } from "react-icons/hi";
 import { BackgroundEffect } from "../BackgroundEffect";
 import { ISSUESCATEGORIES, COMPLAINTDEPARTMENTS } from "../types/notices";
 import { NotifyError, NotifySuccess } from "../../Toast/ToastNotification";
@@ -13,8 +13,8 @@ const complaintSchema = z.object({
   status: z.string().min(1, "Status is required"),
   categoryId: z.string().min(1, "Please select a category"),
   deptId: z.string().min(1, "Please select a department"),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  description: z.string().min(10, "Please provide a more detailed description"),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
+  description: z.string().min(3, "Please provide a more detailed description"),
   otherCategory: z.string().optional(),
   otherDept: z.string().optional(),
   resolution: z.string().optional(),
@@ -56,7 +56,18 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
 
   // Helper to update state and clear specific error
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => {
+      const newState = { ...prev, [field]: value };
+
+      if (field === "categoryId" && value !== "99") {
+        newState.otherCategory = "";
+      }
+      if (field === "deptId" && value !== "99") {
+        newState.otherDept = "";
+      }
+
+      return newState;
+    });
     if (errors[field]) {
       setErrors((prev: any) => {
         const newErrors = { ...prev };
@@ -95,7 +106,7 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // 2. Validate with Zod
     const validation = complaintSchema.safeParse(formData);
     if (!validation.success) {
@@ -157,7 +168,7 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
 
         <div className="p-8 relative z-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <form className="space-y-5" onSubmit={handleSubmit}>
-            
+
             {/* Student Name & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -181,13 +192,16 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
             {/* Issue Category */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Issue Category</label>
-              <select value={formData.categoryId} onChange={e => handleInputChange("categoryId", e.target.value)}
-                className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 cursor-pointer">
-                <option value="">Select Category</option>
-                {ISSUESCATEGORIES.map((item) => (
-                  <option key={item.id} value={item.id}>{item.label}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select value={formData.categoryId} onChange={e => handleInputChange("categoryId", e.target.value)}
+                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 appearance-none cursor-pointer transition-all">
+                  <option value="">Select Category</option>
+                  {ISSUESCATEGORIES.map((item) => (
+                    <option key={item.id} value={item.id}>{item.label}</option>
+                  ))}
+                </select>
+                <HiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              </div>
               <ErrorMsg message={errors.categoryId} />
 
               {formData.categoryId === "99" && (
@@ -202,13 +216,16 @@ export default function ComplaintModal({ isOpen, onClose, onSave, initialData }:
             {/* Department */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department</label>
-              <select value={formData.deptId} onChange={e => handleInputChange("deptId", e.target.value)}
-                className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm cursor-pointer">
-                <option value="">Select Department</option>
-                {COMPLAINTDEPARTMENTS.map((dept) => (
-                  <option key={dept.id} value={dept.id}>{dept.label}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select value={formData.deptId} onChange={e => handleInputChange("deptId", e.target.value)}
+                  className="w-full text-slate-900 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm appearance-none cursor-pointer transition-all">
+                  <option value="">Select Department</option>
+                  {COMPLAINTDEPARTMENTS.map((dept) => (
+                    <option key={dept.id} value={dept.id}>{dept.label}</option>
+                  ))}
+                </select>
+                <HiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              </div>
               <ErrorMsg message={errors.deptId} />
 
               {formData.deptId === "99" && (

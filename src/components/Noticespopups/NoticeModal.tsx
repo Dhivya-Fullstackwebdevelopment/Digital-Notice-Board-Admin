@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { HiOutlineX } from "react-icons/hi";
+import { HiChevronDown, HiOutlineX } from "react-icons/hi";
 import { CATEGORIES, DEPARTMENTS, type Notice } from "../types/notices";
 import { BackgroundEffect } from "../BackgroundEffect";
 import apiClient from "../../api/apiUrl";
@@ -48,7 +48,16 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
     const [errors, setErrors] = useState<any>({});
 
     const handleInputChange = (field: string, value: any) => {
-        setFormData((prev: any) => ({ ...prev, [field]: value }));
+        setFormData((prev: any) => {
+            const newState = { ...prev, [field]: value };
+            if (field === "deptId" && value !== "99") {
+                newState.otherDept = "";
+            }
+            if (field === "categoryId" && value !== "99") {
+                newState.otherCategory = "";
+            }
+            return newState;
+        });
         if (errors[field]) {
             setErrors((prevErrors: any) => {
                 const newErrors = { ...prevErrors };
@@ -201,35 +210,45 @@ export default function NoticeModal({ isOpen, onClose, onSave, initialData }: an
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Department<span className="text-red-500">*</span></label>
-                                <select value={formData.deptId} onChange={e => handleInputChange("deptId", e.target.value)}
-                                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                                    {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
-                                </select>
+                                <div className="relative">
+                                    <select value={formData.deptId} onChange={e => handleInputChange("deptId", e.target.value)}
+                                        className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 appearance-none cursor-pointer">
+                                        {DEPARTMENTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
+                                    </select>
+                                    <HiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                                </div>
                                 <ErrorMsg message={errors.deptId} />
+
                                 {formData.deptId === "99" && (
                                     <input
                                         placeholder="Specify Department Name"
                                         value={formData.otherDept}
                                         onChange={e => handleInputChange("otherDept", e.target.value)}
-                                        className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
+                                        className="w-full mt-2 text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
                                     />
                                 )}
                                 <ErrorMsg message={errors.otherDept} />
                             </div>
+
+                            {/* Category Select */}
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Category<span className="text-red-500">*</span></label>
-                                <select value={formData.categoryId} onChange={e => handleInputChange("categoryId", e.target.value)}
-                                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10  text-sm text-slate-700 appearance-none cursor-pointer">
-                                    <option value="0">All</option>
-                                    {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-                                </select>
+                                <div className="relative">
+                                    <select value={formData.categoryId} onChange={e => handleInputChange("categoryId", e.target.value)}
+                                        className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 text-sm text-slate-700 appearance-none cursor-pointer">
+                                        <option value="0">All</option>
+                                        {CATEGORIES.filter(c => c.id !== "0").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                                    </select>
+                                    <HiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                                </div>
                                 <ErrorMsg message={errors.categoryId} />
+
                                 {formData.categoryId === "99" && (
                                     <input
                                         placeholder="Specify Category Name"
                                         value={formData.otherCategory}
                                         onChange={e => handleInputChange("otherCategory", e.target.value)}
-                                        className="w-full text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all  resize-none shadow-sm"
+                                        className="w-full mt-2 text-slate-900 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
                                     />
                                 )}
                                 <ErrorMsg message={errors.otherCategory} />
